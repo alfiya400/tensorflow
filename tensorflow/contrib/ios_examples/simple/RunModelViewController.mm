@@ -33,8 +33,31 @@
 #include "tensorflow/core/platform/mutex.h"
 #include "tensorflow/core/platform/types.h"
 #include "tensorflow/core/public/session.h"
+#include "tensorflow/core/util/memmapped_file_system.h"
 
 #include "ios_image_load.h"
+#include "tensorflow_utils.h"
+// If you have your own model, modify this to the file name, and make sure
+// you've added the file to your app resources too.
+static NSString* model_file_name = @"mmapped_graph";
+static NSString* model_file_type = @"pb";
+// This controls whether we'll be loading a plain GraphDef proto, or a
+// file created by the convert_graphdef_memmapped_format utility that wraps a
+// GraphDef and parameter file that can be mapped into memory from file to
+// reduce overall memory usage.
+const bool model_uses_memory_mapping = true;
+// If you have your own model, point this to the labels file.
+static NSString* labels_file_name = @"output_labels";
+static NSString* labels_file_type = @"txt";
+// These dimensions need to match those the model was trained with.
+const int wanted_input_width = 299;
+const int wanted_input_height = 299;
+const int wanted_input_channels = 3;
+const float input_mean = 128.0f;
+const float input_std = 128.0f;
+const std::string input_layer_name = "Mul";
+const std::string output_layer_name = "final_result";
+
 
 NSString* RunInferenceOnImage();
 
@@ -70,7 +93,7 @@ class IfstreamInputStream : public ::google::protobuf::io::CopyingInputStream {
 }
 
 @end
-
+/*
 // Returns the top N confidence values over threshold in the provided vector,
 // sorted by confidence in descending order.
 static void GetTopN(
@@ -134,8 +157,28 @@ NSString* FilePathForResourceName(NSString* name, NSString* extension) {
   }
   return file_path;
 }
-
+*/
 NSString* RunInferenceOnImage() {
+  std::unique_ptr<tensorflow::Session> tf_session;
+  std::unique_ptr<tensorflow::MemmappedEnv> tf_memmapped_env;
+  std::vector<std::string> labels;
+  tensorflow::Status load_status;
+  if (model_uses_memory_mapping) {
+      load_status = LoadMemoryMappedModel(model_file_name, model_file_type, &tf_session, &tf_memmapped_env);
+  } else {
+      load_status = LoadModel(model_file_name, model_file_type, &tf_session);
+  }
+  if (!load_status.ok()) {
+      LOG(FATAL) << "Couldn't load model: " << load_status;
+  }
+  
+  tensorflow::Status labels_status =
+  LoadLabels(labels_file_name, labels_file_type, &labels);
+  if (!labels_status.ok()) {
+      LOG(FATAL) << "Couldn't load labels: " << labels_status;
+  }
+    
+/*
   tensorflow::SessionOptions options;
 
   tensorflow::Session* session_pointer = nullptr;
@@ -151,7 +194,7 @@ NSString* RunInferenceOnImage() {
   tensorflow::GraphDef tensorflow_graph;
   LOG(INFO) << "Graph created.";
 
-  NSString* network_path = FilePathForResourceName(@"tensorflow_inception_graph", @"pb");
+  NSString* network_path = FilePathForResourceName(@"quantized_graph", @"pb");
   PortableReadFileToProto([network_path UTF8String], &tensorflow_graph);
 
   LOG(INFO) << "Creating session.";
@@ -162,7 +205,8 @@ NSString* RunInferenceOnImage() {
   }
 
   // Read the label list
-  NSString* labels_path = FilePathForResourceName(@"imagenet_comp_graph_label_strings", @"txt");
+  LOG(INFO) << "Reading labels.";
+  NSString* labels_path = FilePathForResourceName(@"output_labels", @"txt");
   std::vector<std::string> label_strings;
   std::ifstream t;
   t.open([labels_path UTF8String]);
@@ -172,20 +216,22 @@ NSString* RunInferenceOnImage() {
     label_strings.push_back(line);
   }
   t.close();
-
+*/
   // Read the Grace Hopper image.
-  NSString* image_path = FilePathForResourceName(@"grace_hopper", @"jpg");
+  LOG(INFO) << "Loading image";
+  NSString* image_path = FilePathForResourceName(@"aj2", @"jpg");
   int image_width;
   int image_height;
   int image_channels;
   std::vector<tensorflow::uint8> image_data = LoadImageFromFile(
 	[image_path UTF8String], &image_width, &image_height, &image_channels);
-  const int wanted_width = 224;
-  const int wanted_height = 224;
+  const int wanted_width = 299;
+  const int wanted_height = 299;
   const int wanted_channels = 3;
-  const float input_mean = 117.0f;
-  const float input_std = 1.0f;
+  const float input_mean = 128.0f;
+  const float input_std = 128.0f;
   assert(image_channels >= wanted_channels);
+  LOG(INFO) << "Do stuff";
   tensorflow::Tensor image_tensor(
       tensorflow::DT_FLOAT,
       tensorflow::TensorShape({
@@ -208,15 +254,44 @@ NSString* RunInferenceOnImage() {
     }
   }
 
-  NSString* result = [network_path stringByAppendingString: @" - loaded!"];
+  NSString* result = [model_file_name stringByAppendingString: @" - loaded!"];
+/*
   result = [NSString stringWithFormat: @"%@ - %d, %s - %dx%d", result,
 	label_strings.size(), label_strings[0].c_str(), image_width, image_height];
 
-  std::string input_layer = "input";
-  std::string output_layer = "output";
+  std::string input_layer = "Mul";
+  std::string output_layer = "final_result";
   std::vector<tensorflow::Tensor> outputs;
   tensorflow::Status run_status = session->Run({{input_layer, image_tensor}},
 				               {output_layer}, {}, &outputs);
+*/
+  
+  std::vector<tensorflow::Tensor> outputs;
+  tensorflow::Status run_status = tf_session->Run({{input_layer_name, image_tensor}},
+    {output_layer_name}, {}, &outputs);
+      /*
+      if (!run_status.ok()) {
+          LOG(ERROR) << "Running model failed:" << run_status;
+      } else {
+          tensorflow::Tensor *output = &outputs[0];
+          auto predictions = output->flat<float>();
+          
+          NSMutableDictionary *newValues = [NSMutableDictionary dictionary];
+          for (int index = 0; index < predictions.size(); index += 1) {
+              const float predictionValue = predictions(index);
+              if (predictionValue > 0.05f) {
+                  std::string label = labels[index % predictions.size()];
+                  NSString *labelObject = [NSString stringWithCString:label.c_str()];
+                  NSNumber *valueObject = [NSNumber numberWithFloat:predictionValue];
+                  [newValues setObject:valueObject forKey:labelObject];
+              }
+          }
+          dispatch_async(dispatch_get_main_queue(), ^(void) {
+              [self setPredictionValues:newValues];
+          });
+      }
+       */
+
   if (!run_status.ok()) {
     LOG(ERROR) << "Running model failed: " << run_status;
     tensorflow::LogAllRegisteredKernels();
@@ -242,10 +317,10 @@ NSString* RunInferenceOnImage() {
     ss << index << " " << confidence << "  ";
 
     // Write out the result as a string
-    if (index < label_strings.size()) {
+    if (index < labels.size()) {
       // just for safety: theoretically, the output is under 1000 unless there
       // is some numerical issues leading to a wrong prediction.
-      ss << label_strings[index];
+      ss << labels[index];
     } else {
       ss << "Prediction: " << index;
     }

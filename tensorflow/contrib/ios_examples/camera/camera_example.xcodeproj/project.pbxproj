@@ -14,8 +14,6 @@
 		591D3ED21CFF85C30059011C /* ios_image_load.mm in Sources */ = {isa = PBXBuildFile; fileRef = 591D3ED11CFF85C30059011C /* ios_image_load.mm */; };
 		591D3ED51CFF85FD0059011C /* tensorflow_utils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 591D3ED31CFF85FD0059011C /* tensorflow_utils.mm */; };
 		591D3EDA1CFFA83A0059011C /* grace_hopper.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 591D3ED71CFFA83A0059011C /* grace_hopper.jpg */; };
-		591D3EDB1CFFA83A0059011C /* imagenet_comp_graph_label_strings.txt in Resources */ = {isa = PBXBuildFile; fileRef = 591D3ED81CFFA83A0059011C /* imagenet_comp_graph_label_strings.txt */; };
-		591D3EDC1CFFA83A0059011C /* tensorflow_inception_graph.pb in Resources */ = {isa = PBXBuildFile; fileRef = 591D3ED91CFFA83A0059011C /* tensorflow_inception_graph.pb */; };
 		591D3EDF1CFFAD230059011C /* libprotobuf-lite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 591D3EDD1CFFAD230059011C /* libprotobuf-lite.a */; };
 		591D3EE01CFFAD230059011C /* libprotobuf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 591D3EDE1CFFAD230059011C /* libprotobuf.a */; };
 		592FF8B918ECBD7600C164F8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 592FF8B818ECBD7600C164F8 /* Foundation.framework */; };
@@ -25,6 +23,8 @@
 		592FF92518EE240200C164F8 /* CameraExampleAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 592FF92218EE240200C164F8 /* CameraExampleAppDelegate.m */; };
 		592FF92618EE240200C164F8 /* CameraExampleViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 592FF92418EE240200C164F8 /* CameraExampleViewController.mm */; };
 		5993C7721D5D4E980048CE6A /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5993C7711D5D4E980048CE6A /* Accelerate.framework */; };
+		B58E095D1DEF1FDE0098BA65 /* mmapped_graph.pb in Resources */ = {isa = PBXBuildFile; fileRef = B58E095B1DEF1FDE0098BA65 /* mmapped_graph.pb */; };
+		B58E095E1DEF1FDE0098BA65 /* output_labels.txt in Resources */ = {isa = PBXBuildFile; fileRef = B58E095C1DEF1FDE0098BA65 /* output_labels.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,8 +39,6 @@
 		591D3ED31CFF85FD0059011C /* tensorflow_utils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = tensorflow_utils.mm; sourceTree = SOURCE_ROOT; };
 		591D3ED41CFF85FD0059011C /* tensorflow_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tensorflow_utils.h; sourceTree = SOURCE_ROOT; };
 		591D3ED71CFFA83A0059011C /* grace_hopper.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = grace_hopper.jpg; sourceTree = "<group>"; };
-		591D3ED81CFFA83A0059011C /* imagenet_comp_graph_label_strings.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = imagenet_comp_graph_label_strings.txt; sourceTree = "<group>"; };
-		591D3ED91CFFA83A0059011C /* tensorflow_inception_graph.pb */ = {isa = PBXFileReference; lastKnownFileType = file; path = tensorflow_inception_graph.pb; sourceTree = "<group>"; };
 		591D3EDD1CFFAD230059011C /* libprotobuf-lite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libprotobuf-lite.a"; path = "../../makefile/gen/protobuf_ios/lib/libprotobuf-lite.a"; sourceTree = "<group>"; };
 		591D3EDE1CFFAD230059011C /* libprotobuf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprotobuf.a; path = ../../makefile/gen/protobuf_ios/lib/libprotobuf.a; sourceTree = "<group>"; };
 		592FF8B518ECBD7600C164F8 /* CameraExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CameraExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -54,6 +52,8 @@
 		592FF92318EE240200C164F8 /* CameraExampleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraExampleViewController.h; sourceTree = SOURCE_ROOT; };
 		592FF92418EE240200C164F8 /* CameraExampleViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CameraExampleViewController.mm; sourceTree = SOURCE_ROOT; };
 		5993C7711D5D4E980048CE6A /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/Accelerate.framework; sourceTree = DEVELOPER_DIR; };
+		B58E095B1DEF1FDE0098BA65 /* mmapped_graph.pb */ = {isa = PBXFileReference; lastKnownFileType = file; path = mmapped_graph.pb; sourceTree = "<group>"; };
+		B58E095C1DEF1FDE0098BA65 /* output_labels.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = output_labels.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,9 +79,9 @@
 		591D3ED61CFFA83A0059011C /* data */ = {
 			isa = PBXGroup;
 			children = (
+				B58E095B1DEF1FDE0098BA65 /* mmapped_graph.pb */,
+				B58E095C1DEF1FDE0098BA65 /* output_labels.txt */,
 				591D3ED71CFFA83A0059011C /* grace_hopper.jpg */,
-				591D3ED81CFFA83A0059011C /* imagenet_comp_graph_label_strings.txt */,
-				591D3ED91CFFA83A0059011C /* tensorflow_inception_graph.pb */,
 			);
 			path = data;
 			sourceTree = SOURCE_ROOT;
@@ -176,6 +176,12 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0720;
+				TargetAttributes = {
+					592FF8B418ECBD7600C164F8 = {
+						DevelopmentTeam = M2529SDZST;
+						ProvisioningStyle = Automatic;
+					};
+				};
 			};
 			buildConfigurationList = 592FF8AE18ECBD3600C164F8 /* Build configuration list for PBXProject "camera_example" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -200,9 +206,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				591D3EDA1CFFA83A0059011C /* grace_hopper.jpg in Resources */,
-				591D3EDC1CFFA83A0059011C /* tensorflow_inception_graph.pb in Resources */,
+				B58E095D1DEF1FDE0098BA65 /* mmapped_graph.pb in Resources */,
 				592FF90D18EDD0DA00C164F8 /* MainStoryboard_iPhone.storyboard in Resources */,
-				591D3EDB1CFFA83A0059011C /* imagenet_comp_graph_label_strings.txt in Resources */,
+				B58E095E1DEF1FDE0098BA65 /* output_labels.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,6 +245,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ENABLE_TESTABILITY = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				ONLY_ACTIVE_ARCH = YES;
 			};
 			name = Debug;
@@ -246,6 +253,7 @@
 		592FF8B018ECBD3600C164F8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 			};
 			name = Release;
 		};
@@ -267,8 +275,10 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = M2529SDZST;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -295,7 +305,7 @@
 					"$(SRCROOT)/../../../..",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(SRCROOT)/../../makefile/gen/lib",
 					"$(SRCROOT)/../../makefile/gen/protobuf_ios/lib",
@@ -305,10 +315,11 @@
 					"-force_load",
 					"$(SRCROOT)/../../makefile/gen/lib/libtensorflow-core.a",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.google.CameraExample;
+				PRODUCT_BUNDLE_IDENTIFIER = "Alfiya-CameraExample";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 2;
 				VALID_ARCHS = "arm64 armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
@@ -332,8 +343,10 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				DEVELOPMENT_TEAM = M2529SDZST;
 				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -354,7 +367,7 @@
 					"$(SRCROOT)/../../../..",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(SRCROOT)/../../makefile/gen/lib",
 					"$(SRCROOT)/../../makefile/gen/protobuf_ios/lib",
@@ -364,10 +377,11 @@
 					"-force_load",
 					"$(SRCROOT)/../../makefile/gen/lib/libtensorflow-core.a",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.google.CameraExample;
+				PRODUCT_BUNDLE_IDENTIFIER = "Alfiya-CameraExample";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 2;
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "arm64 armv7 armv7s";
 				WRAPPER_EXTENSION = app;
