@@ -69,10 +69,11 @@ void GetTopN(const Eigen::TensorMap<Eigen::Tensor<float, 1, Eigen::RowMajor>,
                       std::greater<std::pair<float, int> > >
       top_result_pq;
 
+  NSString *log_str = @"Predictions";
   const int count = prediction.size();
   for (int i = 0; i < count; ++i) {
     const float value = prediction(i);
-
+    log_str = [log_str stringByAppendingString:[NSString stringWithFormat:@",%f", value]];
     // Only add it if it beats the threshold and has a chance at being in
     // the top N.
     if (value < threshold) {
@@ -86,7 +87,7 @@ void GetTopN(const Eigen::TensorMap<Eigen::Tensor<float, 1, Eigen::RowMajor>,
       top_result_pq.pop();
     }
   }
-
+  NSLog(@"%@", log_str);
   // Copy to output vector and reverse into descending order.
   while (!top_result_pq.empty()) {
     top_results->push_back(top_result_pq.top());

@@ -20,6 +20,7 @@
 #include <queue>
 #include <sstream>
 #include <string>
+#import <Foundation/Foundation.h>
 
 #include "google/protobuf/io/coded_stream.h"
 #include "google/protobuf/io/zero_copy_stream_impl.h"
@@ -37,6 +38,9 @@
 
 #include "ios_image_load.h"
 #include "tensorflow_utils.h"
+#define NSLog(FORMAT, ...) printf("%s\n", [[NSString stringWithFormat:FORMAT, ##__VA_ARGS__] UTF8String]);
+
+
 // If you have your own model, modify this to the file name, and make sure
 // you've added the file to your app resources too.
 static NSString* model_file_name = @"mmapped_graph";
@@ -93,71 +97,7 @@ class IfstreamInputStream : public ::google::protobuf::io::CopyingInputStream {
 }
 
 @end
-/*
-// Returns the top N confidence values over threshold in the provided vector,
-// sorted by confidence in descending order.
-static void GetTopN(
-    const Eigen::TensorMap<Eigen::Tensor<float, 1, Eigen::RowMajor>,
-                           Eigen::Aligned>& prediction,
-    const int num_results, const float threshold,
-    std::vector<std::pair<float, int> >* top_results) {
-  // Will contain top N results in ascending order.
-  std::priority_queue<std::pair<float, int>,
-      std::vector<std::pair<float, int> >,
-      std::greater<std::pair<float, int> > > top_result_pq;
 
-  const int count = prediction.size();
-  for (int i = 0; i < count; ++i) {
-    const float value = prediction(i);
-
-    // Only add it if it beats the threshold and has a chance at being in
-    // the top N.
-    if (value < threshold) {
-      continue;
-    }
-
-    top_result_pq.push(std::pair<float, int>(value, i));
-
-    // If at capacity, kick the smallest value out.
-    if (top_result_pq.size() > num_results) {
-      top_result_pq.pop();
-    }
-  }
-
-  // Copy to output vector and reverse into descending order.
-  while (!top_result_pq.empty()) {
-    top_results->push_back(top_result_pq.top());
-    top_result_pq.pop();
-  }
-  std::reverse(top_results->begin(), top_results->end());
-}
-
-
-bool PortableReadFileToProto(const std::string& file_name,
-                             ::google::protobuf::MessageLite* proto) {
-  ::google::protobuf::io::CopyingInputStreamAdaptor stream(
-      new IfstreamInputStream(file_name));
-  stream.SetOwnsCopyingStream(true);
-  // TODO(jiayq): the following coded stream is for debugging purposes to allow
-  // one to parse arbitrarily large messages for MessageLite. One most likely
-  // doesn't want to put protobufs larger than 64MB on Android, so we should
-  // eventually remove this and quit loud when a large protobuf is passed in.
-  ::google::protobuf::io::CodedInputStream coded_stream(&stream);
-  // Total bytes hard limit / warning limit are set to 1GB and 512MB
-  // respectively. 
-  coded_stream.SetTotalBytesLimit(1024LL << 20, 512LL << 20);
-  return proto->ParseFromCodedStream(&coded_stream);
-}
-
-NSString* FilePathForResourceName(NSString* name, NSString* extension) {
-  NSString* file_path = [[NSBundle mainBundle] pathForResource:name ofType:extension];
-  if (file_path == NULL) {
-    LOG(FATAL) << "Couldn't find '" << [name UTF8String] << "."
-	       << [extension UTF8String] << "' in bundle.";
-  }
-  return file_path;
-}
-*/
 NSString* RunInferenceOnImage() {
   std::unique_ptr<tensorflow::Session> tf_session;
   std::unique_ptr<tensorflow::MemmappedEnv> tf_memmapped_env;
@@ -178,48 +118,9 @@ NSString* RunInferenceOnImage() {
       LOG(FATAL) << "Couldn't load labels: " << labels_status;
   }
     
-/*
-  tensorflow::SessionOptions options;
-
-  tensorflow::Session* session_pointer = nullptr;
-  tensorflow::Status session_status = tensorflow::NewSession(options, &session_pointer);
-  if (!session_status.ok()) {
-    std::string status_string = session_status.ToString();
-    return [NSString stringWithFormat: @"Session create failed - %s",
-	status_string.c_str()];
-  }
-  std::unique_ptr<tensorflow::Session> session(session_pointer);
-  LOG(INFO) << "Session created.";
-
-  tensorflow::GraphDef tensorflow_graph;
-  LOG(INFO) << "Graph created.";
-
-  NSString* network_path = FilePathForResourceName(@"quantized_graph", @"pb");
-  PortableReadFileToProto([network_path UTF8String], &tensorflow_graph);
-
-  LOG(INFO) << "Creating session.";
-  tensorflow::Status s = session->Create(tensorflow_graph);
-  if (!s.ok()) {
-    LOG(ERROR) << "Could not create TensorFlow Graph: " << s;
-    return @"";
-  }
-
-  // Read the label list
-  LOG(INFO) << "Reading labels.";
-  NSString* labels_path = FilePathForResourceName(@"output_labels", @"txt");
-  std::vector<std::string> label_strings;
-  std::ifstream t;
-  t.open([labels_path UTF8String]);
-  std::string line;
-  while(t){
-    std::getline(t, line);
-    label_strings.push_back(line);
-  }
-  t.close();
-*/
   // Read the Grace Hopper image.
   LOG(INFO) << "Loading image";
-  NSString* image_path = FilePathForResourceName(@"aj2", @"jpg");
+  NSString* image_path = FilePathForResourceName(@"aj1", @"jpg");
   int image_width;
   int image_height;
   int image_channels;
@@ -240,6 +141,7 @@ NSString* RunInferenceOnImage() {
   tensorflow::uint8* in = image_data.data();
   tensorflow::uint8* in_end = (in + (image_height * image_width * image_channels));
   float* out = image_tensor_mapped.data();
+  NSString *log_str = @"";
   for (int y = 0; y < wanted_height; ++y) {
     const int in_y = (y * image_height) / wanted_height;
     tensorflow::uint8* in_row = in + (in_y * image_width * image_channels);
@@ -250,7 +152,12 @@ NSString* RunInferenceOnImage() {
       float* out_pixel = out_row + (x * wanted_channels);
       for (int c = 0; c < wanted_channels; ++c) {
         out_pixel[c] = (in_pixel[c] - input_mean) / input_std;
+        log_str = [log_str stringByAppendingString:[NSString stringWithFormat:@"%u,", in_pixel[c]]];
+
       }
+  //    NSLog(log_str);
+      log_str = @"";
+
     }
   }
 

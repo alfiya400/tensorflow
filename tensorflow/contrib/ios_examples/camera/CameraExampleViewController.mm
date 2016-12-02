@@ -21,7 +21,7 @@
 #include <sys/time.h>
 
 #include "tensorflow_utils.h"
-#define NSLog(FORMAT, ...) printf("%s\n", [[NSString stringWithFormat:FORMAT, ##__VA_ARGS__] UTF8String]);
+//#define NSLog(FORMAT, ...) printf("%s\n", [[NSString stringWithFormat:FORMAT, ##__VA_ARGS__] UTF8String]);
 
 // If you have your own model, modify this to the file name, and make sure
 // you've added the file to your app resources too.
@@ -107,6 +107,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext =
     [session startRunning];
     
     [session release];
+
     if (error) {
         UIAlertView *alertView = [[UIAlertView alloc]
                                   initWithTitle:[NSString stringWithFormat:@"Failed with error %d",
@@ -176,6 +177,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext =
 
 - (IBAction)takePicture:(id)sender {
     if ([session isRunning]) {
+		[self runCNNOnFrame:pixlBuffer];
         [session stopRunning];
         [sender setTitle:@"Continue" forState:UIControlStateNormal];
         
@@ -199,7 +201,6 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext =
                                                   flashView = nil;
                                               }];
                          }];
-        
     } else {
         [session startRunning];
         [sender setTitle:@"Freeze Frame" forState:UIControlStateNormal];
@@ -256,8 +257,8 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext =
 - (void)captureOutput:(AVCaptureOutput *)captureOutput
 didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
        fromConnection:(AVCaptureConnection *)connection {
-    CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-    [self runCNNOnFrame:pixelBuffer];
+    pixlBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    //[self runCNNOnFrame:pixelBuffer];
 }
 
 - (void)runCNNOnFrame:(CVPixelBufferRef)pixelBuffer {
@@ -276,6 +277,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     const int image_width = (int)CVPixelBufferGetWidth(pixelBuffer);
     const int fullHeight = (int)CVPixelBufferGetHeight(pixelBuffer);
     CVPixelBufferLockBaseAddress(pixelBuffer, 0);
+
     unsigned char *sourceBaseAddr =
     (unsigned char *)(CVPixelBufferGetBaseAddress(pixelBuffer));
     int image_height;
@@ -289,7 +291,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         sourceStartAddr = (sourceBaseAddr + (marginY * sourceRowBytes));
     }
     const int image_channels = 4;
-    
+//    NSLog(@"full height %i, width %i, height %i, row bytes %i", fullHeight, image_width, image_height, sourceRowBytes);
     assert(image_channels >= wanted_input_channels);
     tensorflow::Tensor image_tensor(
         tensorflow::DT_FLOAT,
@@ -300,11 +302,16 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     auto image_tensor_mapped = image_tensor.tensor<float, 4>();
     tensorflow::uint8 *in = sourceStartAddr;
     float *out = image_tensor_mapped.data();
-    
-    //NSString *filename = @"/Users/aismagilova/quickfox.txt";
-    //[[NSFileManager defaultManager] createFileAtPath:filename contents:nil attributes:nil];
-    //NSFileHandle *file;
-    //file = [NSFileHandle fileHandleForUpdatingAtPath:filename];
+	
+	// Log directories
+	NSString *documentsDirectory = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+	NSString *filename = [documentsDirectory stringByAppendingPathComponent:@"log.txt"];
+    [[NSFileManager defaultManager] createFileAtPath:filename contents:nil attributes:nil];
+	NSFileManager *filemgr = [NSFileManager defaultManager];
+	if ([filemgr fileExistsAtPath: filename ] == NO)
+		NSLog (@"File %@ not found", filename);
+    NSFileHandle *file;
+    file = [NSFileHandle fileHandleForUpdatingAtPath:filename];
     NSString *log_str = @"";
     for (int y = 0; y < wanted_input_height; ++y) {
         float *out_row = out + (y * wanted_input_width * wanted_input_channels);
@@ -316,17 +323,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             float *out_pixel = out_row + (x * wanted_input_channels);
             for (int c = 0; c < wanted_input_channels; ++c) {
                 out_pixel[c] = (in_pixel[wanted_input_channels-1-c] - input_mean) / input_std;
-                //[file seekToEndOfFile];
                 log_str = [log_str stringByAppendingString:[NSString stringWithFormat:@"%u,", in_pixel[wanted_input_channels-1-c]]];
-                //[file writeData: [str dataUsingEncoding:NSUTF8StringEncoding]];
             }
-            //[file writeData: [@"\n" dataUsingEncoding:NSUTF8StringEncoding]];
-//            NSLog(@"%@", log_str);
+			[file seekToEndOfFile];
+			[file writeData: [log_str dataUsingEncoding:NSUTF8StringEncoding]];
             log_str = @"";
         }
         
     }
-    //[file closeFile];
+
     log_str = @"Prediction";
     if (tf_session.get()) {
         std::vector<tensorflow::Tensor> outputs;
@@ -355,7 +360,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             });
         }
     }
-//    NSLog(@"%@", log_str);
+	[file seekToEndOfFile];
+	[file writeData: [log_str dataUsingEncoding:NSUTF8StringEncoding]];
+	[file closeFile];
 }
 
 - (void)dealloc {
@@ -450,8 +457,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 - (void)setPredictionValues:(NSDictionary *)newValues {
-    const float decayValue = 0.75f;
-    const float updateValue = 0.25f;
+    const float decayValue = 0.0f;
+    const float updateValue = 1.0f;
     const float minimumThreshold = 0.01f;
     
     NSMutableDictionary *decayedPredictionValues =

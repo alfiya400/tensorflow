@@ -38,6 +38,7 @@
   std::unique_ptr<tensorflow::Session> tf_session;
   std::unique_ptr<tensorflow::MemmappedEnv> tf_memmapped_env;
   std::vector<std::string> labels;
+  CVPixelBufferRef pixlBuffer;
 }
 @property(retain, nonatomic) CATextLayer *predictionTextLayer;
 
