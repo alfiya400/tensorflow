@@ -43,6 +43,7 @@ const float input_mean = 128.0f;
 const float input_std = 128.0f;
 const std::string input_layer_name = "input_2";
 const std::string output_layer_name = "Softmax_2";
+const bool logging = NO;
 
 static const NSString *AVCaptureStillImageIsCapturingStillImageContext =
 @"AVCaptureStillImageIsCapturingStillImageContext";
@@ -177,7 +178,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext =
 
 - (IBAction)takePicture:(id)sender {
     if ([session isRunning]) {
-		[self runCNNOnFrame:pixlBuffer];
+		//[self runCNNOnFrame:pixlBuffer];
         [session stopRunning];
         [sender setTitle:@"Continue" forState:UIControlStateNormal];
         
@@ -258,7 +259,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext =
 didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
        fromConnection:(AVCaptureConnection *)connection {
     pixlBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-    //[self runCNNOnFrame:pixelBuffer];
+    [self runCNNOnFrame:pixlBuffer];
 }
 
 - (void)runCNNOnFrame:(CVPixelBufferRef)pixelBuffer {
@@ -305,34 +306,41 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 	
 	// Log directories
 	NSString *documentsDirectory = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
-	NSString *filename = [documentsDirectory stringByAppendingPathComponent:@"log.txt"];
-    [[NSFileManager defaultManager] createFileAtPath:filename contents:nil attributes:nil];
-	NSFileManager *filemgr = [NSFileManager defaultManager];
-	if ([filemgr fileExistsAtPath: filename ] == NO)
-		NSLog (@"File %@ not found", filename);
-    NSFileHandle *file;
-    file = [NSFileHandle fileHandleForUpdatingAtPath:filename];
-    NSString *log_str = @"";
+	NSString *filename = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"log%i.txt", (int)[[NSDate date] timeIntervalSinceReferenceDate]]];
+	NSLog(@"%@", filename);
+	
+	NSString *log_str;
+	NSFileHandle *file;
+	if (logging == YES) {
+		[[NSFileManager defaultManager] createFileAtPath:filename contents:nil attributes:nil];
+		NSFileManager *filemgr = [NSFileManager defaultManager];
+		if ([filemgr fileExistsAtPath: filename ] == NO)
+			NSLog (@"File %@ not found", filename);
+		file = [NSFileHandle fileHandleForUpdatingAtPath:filename];
+		log_str = @"";
+	}
     for (int y = 0; y < wanted_input_height; ++y) {
         float *out_row = out + (y * wanted_input_width * wanted_input_channels);
         for (int x = 0; x < wanted_input_width; ++x) {
-            const int in_x = (y * image_width) / wanted_input_width;
-            const int in_y = (x * image_height) / wanted_input_height;
+            const int in_x = (x * image_width) / wanted_input_width;
+            const int in_y = (y * image_height) / wanted_input_height;
             tensorflow::uint8 *in_pixel =
             in + (in_y * image_width * image_channels) + (in_x * image_channels);
             float *out_pixel = out_row + (x * wanted_input_channels);
             for (int c = 0; c < wanted_input_channels; ++c) {
                 out_pixel[c] = (in_pixel[wanted_input_channels-1-c] - input_mean) / input_std;
-                log_str = [log_str stringByAppendingString:[NSString stringWithFormat:@"%u,", in_pixel[wanted_input_channels-1-c]]];
+				if (logging == YES) {
+					log_str = [log_str stringByAppendingString:[NSString stringWithFormat:@"%u,", in_pixel[wanted_input_channels-1-c]]];
+					[file seekToEndOfFile];
+					[file writeData: [log_str dataUsingEncoding:NSUTF8StringEncoding]];
+					log_str = @"";
+				}
             }
-			[file seekToEndOfFile];
-			[file writeData: [log_str dataUsingEncoding:NSUTF8StringEncoding]];
-            log_str = @"";
         }
-        
     }
-
-    log_str = @"Prediction";
+	if (logging == YES) {
+		log_str = @"\nPrediction";
+	}
     if (tf_session.get()) {
         std::vector<tensorflow::Tensor> outputs;
         tensorflow::Status run_status = tf_session->Run(
@@ -347,7 +355,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             NSMutableDictionary *newValues = [NSMutableDictionary dictionary];
             for (int index = 0; index < predictions.size(); index += 1) {
                 const float predictionValue = predictions(index);
-                log_str = [log_str stringByAppendingString:[NSString stringWithFormat:@",%f", predictionValue]];
+				if (logging == YES) {
+					log_str = [log_str stringByAppendingString:[NSString stringWithFormat:@",%f", predictionValue]];
+				}
                 if (predictionValue > 0.05f) {
                     std::string label = labels[index % predictions.size()];
                     NSString *labelObject = [NSString stringWithCString:label.c_str()];
@@ -360,9 +370,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             });
         }
     }
-	[file seekToEndOfFile];
-	[file writeData: [log_str dataUsingEncoding:NSUTF8StringEncoding]];
-	[file closeFile];
+	if (logging == YES) {
+		[file seekToEndOfFile];
+		[file writeData: [log_str dataUsingEncoding:NSUTF8StringEncoding]];
+		[file closeFile];
+	}
 }
 
 - (void)dealloc {
@@ -555,10 +567,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                              height:labelHeight
                           alignment:kCAAlignmentLeft];
         
-        if ((labelCount == 0) && (value > 0.5f)) {
-            [self speak:[label capitalizedString]];
-        }
-        
+//        if ((labelCount == 0) && (value > 0.5f)) {
+//            [self speak:[label capitalizedString]];
+//        }
+		
         labelCount += 1;
         if (labelCount > 4) {
             break;
@@ -613,38 +625,38 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [[self.view layer] addSublayer:layer];
     [labelLayers addObject:layer];
 }
-
-- (void)setPredictionText:(NSString *)text withDuration:(float)duration {
-    if (duration > 0.0) {
-        CABasicAnimation *colorAnimation =
-        [CABasicAnimation animationWithKeyPath:@"foregroundColor"];
-        colorAnimation.duration = duration;
-        colorAnimation.fillMode = kCAFillModeForwards;
-        colorAnimation.removedOnCompletion = NO;
-        colorAnimation.fromValue = (id)[UIColor darkGrayColor].CGColor;
-        colorAnimation.toValue = (id)[UIColor whiteColor].CGColor;
-        colorAnimation.timingFunction =
-        [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
-        [self.predictionTextLayer addAnimation:colorAnimation
-                                        forKey:@"colorAnimation"];
-    } else {
-        self.predictionTextLayer.foregroundColor = [UIColor whiteColor].CGColor;
-    }
-    
-    [self.predictionTextLayer removeFromSuperlayer];
-    [[self.view layer] addSublayer:self.predictionTextLayer];
-    [self.predictionTextLayer setString:text];
-}
-
-- (void)speak:(NSString *)words {
-    if ([synth isSpeaking]) {
-        return;
-    }
-    AVSpeechUtterance *utterance =
-    [AVSpeechUtterance speechUtteranceWithString:words];
-    utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@"en-US"];
-    utterance.rate = 0.75 * AVSpeechUtteranceDefaultSpeechRate;
-    [synth speakUtterance:utterance];
-}
+//
+//- (void)setPredictionText:(NSString *)text withDuration:(float)duration {
+//    if (duration > 0.0) {
+//        CABasicAnimation *colorAnimation =
+//        [CABasicAnimation animationWithKeyPath:@"foregroundColor"];
+//        colorAnimation.duration = duration;
+//        colorAnimation.fillMode = kCAFillModeForwards;
+//        colorAnimation.removedOnCompletion = NO;
+//        colorAnimation.fromValue = (id)[UIColor darkGrayColor].CGColor;
+//        colorAnimation.toValue = (id)[UIColor whiteColor].CGColor;
+//        colorAnimation.timingFunction =
+//        [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+//        [self.predictionTextLayer addAnimation:colorAnimation
+//                                        forKey:@"colorAnimation"];
+//    } else {
+//        self.predictionTextLayer.foregroundColor = [UIColor whiteColor].CGColor;
+//    }
+//    
+//    [self.predictionTextLayer removeFromSuperlayer];
+//    [[self.view layer] addSublayer:self.predictionTextLayer];
+//    [self.predictionTextLayer setString:text];
+//}
+//
+//- (void)speak:(NSString *)words {
+//    if ([synth isSpeaking]) {
+//        return;
+//    }
+//    AVSpeechUtterance *utterance =
+//    [AVSpeechUtterance speechUtteranceWithString:words];
+//    utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@"en-US"];
+//    utterance.rate = 0.75 * AVSpeechUtteranceDefaultSpeechRate;
+//    [synth speakUtterance:utterance];
+//}
 
 @end

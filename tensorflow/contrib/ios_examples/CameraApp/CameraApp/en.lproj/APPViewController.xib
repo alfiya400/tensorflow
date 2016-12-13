@@ -51,10 +51,11 @@
                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" misplaced="YES" image="default.png" id="47">
                     <rect key="frame" x="0.0" y="8.5" width="480" height="229"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                    <color key="tintColor" red="0.074509803921568626" green="0.61568627450980395" blue="0.91764705882352937" alpha="1" colorSpace="calibratedRGB"/>
                 </imageView>
             </subviews>
             <color key="backgroundColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-            <point key="canvasLocation" x="33.5" y="61.5"/>
+            <point key="canvasLocation" x="-202" y="24"/>
         </view>
     </objects>
     <resources>

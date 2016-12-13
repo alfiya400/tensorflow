@@ -20,7 +20,8 @@
 		B52987971DF6365600FBC189 /* libprotobuf-lite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B52987961DF6365600FBC189 /* libprotobuf-lite.a */; };
 		B52987991DF6367300FBC189 /* libprotobuf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B52987981DF6367300FBC189 /* libprotobuf.a */; };
 		B529879B1DF636FC00FBC189 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B529879A1DF636FC00FBC189 /* Accelerate.framework */; };
-		B529879D1DF709E300FBC189 /* libtensorflow-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B529879C1DF709E300FBC189 /* libtensorflow-core.a */; };
+		B5AAE5A21DF9D977009431BA /* APPAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5AAE5A11DF9D977009431BA /* APPAppDelegate.swift */; };
+		B5AAE5A61DF9E018009431BA /* APPViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5AAE5A51DF9E018009431BA /* APPViewController.swift */; };
 		B5F0A89A1DF7149200EBDDB8 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5F0A8991DF7149200EBDDB8 /* QuartzCore.framework */; };
 		B5F0A8AE1DF7176100EBDDB8 /* labels.txt in Resources */ = {isa = PBXBuildFile; fileRef = B5F0A8AB1DF7176100EBDDB8 /* labels.txt */; };
 		B5F0A8B91DF8778C00EBDDB8 /* mmapped_v2.pb in Resources */ = {isa = PBXBuildFile; fileRef = B5F0A8B81DF8778C00EBDDB8 /* mmapped_v2.pb */; };
@@ -48,7 +49,8 @@
 		B52987961DF6365600FBC189 /* libprotobuf-lite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libprotobuf-lite.a"; path = "../../makefile/gen/protobuf_ios/lib/libprotobuf-lite.a"; sourceTree = "<group>"; };
 		B52987981DF6367300FBC189 /* libprotobuf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprotobuf.a; path = ../../makefile/gen/protobuf_ios/lib/libprotobuf.a; sourceTree = "<group>"; };
 		B529879A1DF636FC00FBC189 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
-		B529879C1DF709E300FBC189 /* libtensorflow-core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libtensorflow-core.a"; path = "../../makefile/gen/lib/libtensorflow-core.a"; sourceTree = "<group>"; };
+		B5AAE5A11DF9D977009431BA /* APPAppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APPAppDelegate.swift; sourceTree = "<group>"; };
+		B5AAE5A51DF9E018009431BA /* APPViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APPViewController.swift; sourceTree = "<group>"; };
 		B5F0A8991DF7149200EBDDB8 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		B5F0A8AB1DF7176100EBDDB8 /* labels.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = labels.txt; sourceTree = "<group>"; };
 		B5F0A8B81DF8778C00EBDDB8 /* mmapped_v2.pb */ = {isa = PBXFileReference; lastKnownFileType = file; path = mmapped_v2.pb; sourceTree = "<group>"; };
@@ -61,7 +63,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B5F0A89A1DF7149200EBDDB8 /* QuartzCore.framework in Frameworks */,
-				B529879D1DF709E300FBC189 /* libtensorflow-core.a in Frameworks */,
 				B529879B1DF636FC00FBC189 /* Accelerate.framework in Frameworks */,
 				B52987991DF6367300FBC189 /* libprotobuf.a in Frameworks */,
 				B52987971DF6365600FBC189 /* libprotobuf-lite.a in Frameworks */,
@@ -95,7 +96,6 @@
 			isa = PBXGroup;
 			children = (
 				B5F0A8991DF7149200EBDDB8 /* QuartzCore.framework */,
-				B529879C1DF709E300FBC189 /* libtensorflow-core.a */,
 				B529879A1DF636FC00FBC189 /* Accelerate.framework */,
 				B52987981DF6367300FBC189 /* libprotobuf.a */,
 				B52987961DF6365600FBC189 /* libprotobuf-lite.a */,
@@ -115,6 +115,8 @@
 				B529878E1DF6216A00FBC189 /* tensorflow_utils.h */,
 				B529878F1DF6216A00FBC189 /* tensorflow_utils.mm */,
 				35791CCD171588890011FD1F /* APPAppDelegate.h */,
+				B5AAE5A11DF9D977009431BA /* APPAppDelegate.swift */,
+				B5AAE5A51DF9E018009431BA /* APPViewController.swift */,
 				35791CCE171588890011FD1F /* APPAppDelegate.mm */,
 				35791CD6171588890011FD1F /* APPViewController.h */,
 				35791CD7171588890011FD1F /* APPViewController.mm */,
@@ -177,6 +179,7 @@
 				TargetAttributes = {
 					35791CBA171588890011FD1F = {
 						DevelopmentTeam = M2529SDZST;
+						LastSwiftMigration = 0810;
 					};
 				};
 			};
@@ -219,8 +222,10 @@
 			files = (
 				35791CCB171588890011FD1F /* main.mm in Sources */,
 				35791CCF171588890011FD1F /* APPAppDelegate.mm in Sources */,
+				B5AAE5A61DF9E018009431BA /* APPViewController.swift in Sources */,
 				B52987921DF6216B00FBC189 /* tensorflow_utils.mm in Sources */,
 				B52987951DF62B4B00FBC189 /* ios_image_load.mm in Sources */,
+				B5AAE5A21DF9D977009431BA /* APPAppDelegate.swift in Sources */,
 				35791CD8171588890011FD1F /* APPViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -344,6 +349,7 @@
 				);
 				INFOPLIST_FILE = "CameraApp/CameraApp-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(SRCROOT)/../../makefile/gen/lib",
 					"$(SRCROOT)/../../makefile/gen/protobuf_ios/lib",
@@ -354,6 +360,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "SneakersApp-test";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "CameraApp-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
@@ -382,6 +391,7 @@
 				);
 				INFOPLIST_FILE = "CameraApp/CameraApp-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(SRCROOT)/../../makefile/gen/lib",
 					"$(SRCROOT)/../../makefile/gen/protobuf_ios/lib",
@@ -392,6 +402,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "SneakersApp-test";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "CameraApp-Bridging-Header.h";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};

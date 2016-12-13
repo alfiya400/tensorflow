@@ -18,12 +18,13 @@
 		59A3D00C1CF4E68100C4259F /* RunModelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 59A3D0001CF4E68100C4259F /* RunModelViewController.xib */; };
 		59A3D0141CF4E82500C4259F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 59A3D0131CF4E82500C4259F /* CoreGraphics.framework */; };
 		59A3D0181CF4E86100C4259F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 59A3D0171CF4E86100C4259F /* UIKit.framework */; };
+		B52987861DF5D46500FBC189 /* log.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B52987831DF5D46500FBC189 /* log.jpg */; };
+		B52987871DF5D46500FBC189 /* labels.txt in Resources */ = {isa = PBXBuildFile; fileRef = B52987841DF5D46500FBC189 /* labels.txt */; };
+		B52987881DF5D46500FBC189 /* mmapped.pb in Resources */ = {isa = PBXBuildFile; fileRef = B52987851DF5D46500FBC189 /* mmapped.pb */; };
 		B5A9167F1DF09D7A00E6770A /* aj1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B5A9167E1DF09D7A00E6770A /* aj1.jpg */; };
 		B5F587C91DEF4B750052AF6A /* aj2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B5F587C41DEF4B750052AF6A /* aj2.jpg */; };
 		B5F587CA1DEF4B750052AF6A /* aj7.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = B5F587C51DEF4B750052AF6A /* aj7.jpeg */; };
 		B5F587CB1DEF4B750052AF6A /* aj7.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B5F587C61DEF4B750052AF6A /* aj7.jpg */; };
-		B5F587CC1DEF4B750052AF6A /* mmapped_graph.pb in Resources */ = {isa = PBXBuildFile; fileRef = B5F587C71DEF4B750052AF6A /* mmapped_graph.pb */; };
-		B5F587CD1DEF4B750052AF6A /* output_labels.txt in Resources */ = {isa = PBXBuildFile; fileRef = B5F587C81DEF4B750052AF6A /* output_labels.txt */; };
 		B5F587D21DEF59CA0052AF6A /* tensorflow_utils.mm in Sources */ = {isa = PBXBuildFile; fileRef = B5F587D11DEF59CA0052AF6A /* tensorflow_utils.mm */; };
 /* End PBXBuildFile section */
 
@@ -45,12 +46,13 @@
 		59A3D0131CF4E82500C4259F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		59A3D0151CF4E83D00C4259F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		59A3D0171CF4E86100C4259F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		B52987831DF5D46500FBC189 /* log.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = log.jpg; sourceTree = "<group>"; };
+		B52987841DF5D46500FBC189 /* labels.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = labels.txt; sourceTree = "<group>"; };
+		B52987851DF5D46500FBC189 /* mmapped.pb */ = {isa = PBXFileReference; lastKnownFileType = file; path = mmapped.pb; sourceTree = "<group>"; };
 		B5A9167E1DF09D7A00E6770A /* aj1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = aj1.jpg; sourceTree = "<group>"; };
 		B5F587C41DEF4B750052AF6A /* aj2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = aj2.jpg; sourceTree = "<group>"; };
 		B5F587C51DEF4B750052AF6A /* aj7.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = aj7.jpeg; sourceTree = "<group>"; };
 		B5F587C61DEF4B750052AF6A /* aj7.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = aj7.jpg; sourceTree = "<group>"; };
-		B5F587C71DEF4B750052AF6A /* mmapped_graph.pb */ = {isa = PBXFileReference; lastKnownFileType = file; path = mmapped_graph.pb; sourceTree = "<group>"; };
-		B5F587C81DEF4B750052AF6A /* output_labels.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = output_labels.txt; sourceTree = "<group>"; };
 		B5F587D01DEF59CA0052AF6A /* tensorflow_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tensorflow_utils.h; sourceTree = "<group>"; };
 		B5F587D11DEF59CA0052AF6A /* tensorflow_utils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = tensorflow_utils.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -107,12 +109,13 @@
 		59A3CFF31CF4E68100C4259F /* data */ = {
 			isa = PBXGroup;
 			children = (
+				B52987831DF5D46500FBC189 /* log.jpg */,
+				B52987841DF5D46500FBC189 /* labels.txt */,
+				B52987851DF5D46500FBC189 /* mmapped.pb */,
 				B5A9167E1DF09D7A00E6770A /* aj1.jpg */,
 				B5F587C41DEF4B750052AF6A /* aj2.jpg */,
 				B5F587C51DEF4B750052AF6A /* aj7.jpeg */,
 				B5F587C61DEF4B750052AF6A /* aj7.jpg */,
-				B5F587C71DEF4B750052AF6A /* mmapped_graph.pb */,
-				B5F587C81DEF4B750052AF6A /* output_labels.txt */,
 				59A3CFF51CF4E68100C4259F /* grace_hopper.jpg */,
 			);
 			path = data;
@@ -179,11 +182,12 @@
 				B5F587C91DEF4B750052AF6A /* aj2.jpg in Resources */,
 				B5F587CB1DEF4B750052AF6A /* aj7.jpg in Resources */,
 				B5A9167F1DF09D7A00E6770A /* aj1.jpg in Resources */,
-				B5F587CD1DEF4B750052AF6A /* output_labels.txt in Resources */,
+				B52987871DF5D46500FBC189 /* labels.txt in Resources */,
+				B52987861DF5D46500FBC189 /* log.jpg in Resources */,
+				B52987881DF5D46500FBC189 /* mmapped.pb in Resources */,
 				59A3D00C1CF4E68100C4259F /* RunModelViewController.xib in Resources */,
 				B5F587CA1DEF4B750052AF6A /* aj7.jpeg in Resources */,
 				59A3D0031CF4E68100C4259F /* grace_hopper.jpg in Resources */,
-				B5F587CC1DEF4B750052AF6A /* mmapped_graph.pb in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -348,6 +352,7 @@
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/RunModel-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				"LD_MAP_FILE_PATH[arch=*]" = "$(TARGET_TEMP_DIR)/$(PRODUCT_NAME)-LinkMap-$(CURRENT_VARIANT)-$(CURRENT_ARCH).txt";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(SRCROOT)/../../makefile/gen/protobuf_ios/lib",

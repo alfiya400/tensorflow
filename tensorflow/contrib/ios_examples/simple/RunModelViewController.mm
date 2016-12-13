@@ -43,7 +43,7 @@
 
 // If you have your own model, modify this to the file name, and make sure
 // you've added the file to your app resources too.
-static NSString* model_file_name = @"mmapped_graph";
+static NSString* model_file_name = @"mmapped";
 static NSString* model_file_type = @"pb";
 // This controls whether we'll be loading a plain GraphDef proto, or a
 // file created by the convert_graphdef_memmapped_format utility that wraps a
@@ -51,7 +51,7 @@ static NSString* model_file_type = @"pb";
 // reduce overall memory usage.
 const bool model_uses_memory_mapping = true;
 // If you have your own model, point this to the labels file.
-static NSString* labels_file_name = @"output_labels";
+static NSString* labels_file_name = @"labels";
 static NSString* labels_file_type = @"txt";
 // These dimensions need to match those the model was trained with.
 const int wanted_input_width = 299;
@@ -59,8 +59,8 @@ const int wanted_input_height = 299;
 const int wanted_input_channels = 3;
 const float input_mean = 128.0f;
 const float input_std = 128.0f;
-const std::string input_layer_name = "Mul";
-const std::string output_layer_name = "final_result";
+const std::string input_layer_name = "input_2";
+const std::string output_layer_name = "Softmax_2";
 
 
 NSString* RunInferenceOnImage();
@@ -120,37 +120,32 @@ NSString* RunInferenceOnImage() {
     
   // Read the Grace Hopper image.
   LOG(INFO) << "Loading image";
-  NSString* image_path = FilePathForResourceName(@"aj1", @"jpg");
+  NSString* image_path = FilePathForResourceName(@"log", @"jpg");
   int image_width;
   int image_height;
   int image_channels;
   std::vector<tensorflow::uint8> image_data = LoadImageFromFile(
 	[image_path UTF8String], &image_width, &image_height, &image_channels);
-  const int wanted_width = 299;
-  const int wanted_height = 299;
-  const int wanted_channels = 3;
-  const float input_mean = 128.0f;
-  const float input_std = 128.0f;
-  assert(image_channels >= wanted_channels);
+  assert(image_channels >= wanted_input_channels);
   LOG(INFO) << "Do stuff";
   tensorflow::Tensor image_tensor(
       tensorflow::DT_FLOAT,
       tensorflow::TensorShape({
-          1, wanted_height, wanted_width, wanted_channels}));
+          1, wanted_input_height, wanted_input_width, wanted_input_channels}));
   auto image_tensor_mapped = image_tensor.tensor<float, 4>();
   tensorflow::uint8* in = image_data.data();
-  tensorflow::uint8* in_end = (in + (image_height * image_width * image_channels));
+ // tensorflow::uint8* in_end = (in + (image_height * image_width * image_channels));
   float* out = image_tensor_mapped.data();
   NSString *log_str = @"";
-  for (int y = 0; y < wanted_height; ++y) {
-    const int in_y = (y * image_height) / wanted_height;
+  for (int y = 0; y < wanted_input_height; ++y) {
+    const int in_y = (y * image_height) / wanted_input_height;
     tensorflow::uint8* in_row = in + (in_y * image_width * image_channels);
-    float* out_row = out + (y * wanted_width * wanted_channels);
-    for (int x = 0; x < wanted_width; ++x) {
-      const int in_x = (x * image_width) / wanted_width;
+    float* out_row = out + (y * wanted_input_width * wanted_input_channels);
+    for (int x = 0; x < wanted_input_width; ++x) {
+      const int in_x = (x * image_width) / wanted_input_width;
       tensorflow::uint8* in_pixel = in_row + (in_x * image_channels);
-      float* out_pixel = out_row + (x * wanted_channels);
-      for (int c = 0; c < wanted_channels; ++c) {
+      float* out_pixel = out_row + (x * wanted_input_channels);
+      for (int c = 0; c < wanted_input_channels; ++c) {
         out_pixel[c] = (in_pixel[c] - input_mean) / input_std;
         log_str = [log_str stringByAppendingString:[NSString stringWithFormat:@"%u,", in_pixel[c]]];
 
